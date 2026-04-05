@@ -24,5 +24,5 @@ function hepsiniKapat() {
 }
 
 function yardimAc() {
-    alert("︾ butonu tüm başlıkları açar, ︽ butonu ise hepsini kapatıp sizi en üste taşır.");
+    alert("︾ butonu tüm başlıkları açar, ︽ butonu ise kapatıp en üste taşır.\n\nArama için sağ üstteki ⋮ (üç nokta) içinden 📄🔍 (Sayfada bul) simgesini seçin.");
 }
