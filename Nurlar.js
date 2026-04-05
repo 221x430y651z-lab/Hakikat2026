@@ -1,28 +1,88 @@
-/* Tüm Kitapları/Başlıkları Açar */
+/* --- TEMEL KONTROL FONKSİYONLARI --- */
 function hepsiniAc() {
-    // Sayfadaki tüm <details> etiketlerini bulur
     const tumMenuler = document.querySelectorAll('details');
-    
-    // Hepsine "open" niteliğini ekleyerek açar
-    tumMenuler.forEach(menu => {
-        menu.setAttribute('open', '');
-    });
+    tumMenuler.forEach(menu => menu.setAttribute('open', ''));
+    // Açılma işlemi bitince barı güncelle
+    setTimeout(barGuncelle, 300);
 }
 
-/* Tüm Kitapları/Başlıkları Kapatır */
 function hepsiniKapat() {
-    // Sadece şu an açık olanları bulur
     const tumAciklar = document.querySelectorAll('details[open]');
-    
-    // Hepsinden "open" niteliğini kaldırarak kapatır
-    tumAciklar.forEach(menu => {
-        menu.removeAttribute('open');
-    });
-
-    // Sayfayı en üste yumuşakça kaydırır
+    tumAciklar.forEach(menu => menu.removeAttribute('open'));
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Kapandıktan sonra barı sıfırla
+    setTimeout(barGuncelle, 500);
 }
 
 function yardimAc() {
-    alert("︾ butonu tüm başlıkları açar, ︽ butonu ise kapatıp en üste taşır.\n\nArama için sağ üstteki ⋮ (üç nokta) içinden 📄🔍 (Sayfada bul) simgesini seçin.");
+    alert("︾: Tüm başlıkları açar.\n︽: Hepsini kapatır ve en üste çıkar.\nÜst Bar: Okuduğunuz sayfa ve konuyu anlık gösterir.");
 }
+
+/* --- AKILLI RADAR VE HİYERARŞİ SİSTEMİ (PERFORMANS ODAKLI) --- */
+function barGuncelle() {
+    const sAlan = document.getElementById('bar-sayfa-metni');
+    const zAlan = document.getElementById('baslik-zinciri');
+    const dolum = document.getElementById('durum-cubugu-doluluk');
+    
+    if (!sAlan || !zAlan) return;
+
+    // 1. Sayfa İlerleme Çubuğu (% doluluk)
+    const toplamYukseklik = document.documentElement.scrollHeight - window.innerHeight;
+    const yuzde = (window.scrollY / toplamYukseklik) * 100;
+    if (dolum) dolum.style.width = yuzde + "%";
+
+    // 2. RADAR: Panelin hemen altındaki hayali çizgi (70px)
+    const radarSiniri = 75; 
+    const tumSayfalar = document.querySelectorAll('.sayfa');
+    
+    let aktifSayfaMetni = "---";
+
+    // Strateji: Yukarıdan aşağıya tara, radar sınırını (barın altını) geçmiş olan EN SON sayfayı bul
+    for (let i = 0; i < tumSayfalar.length; i++) {
+        const konum = tumSayfalar[i].getBoundingClientRect().top;
+        
+        // Eğer bu sayfa barın altına girdiyse onu 'şu anki sayfa' kabul et
+        if (konum <= radarSiniri + 5) {
+            aktifSayfaMetni = tumSayfalar[i].innerText.trim();
+        } else {
+            // Radar sınırının altında kalan (henüz gelmemiş) ilk sayfayı görünce dur
+            break; 
+        }
+    }
+    sAlan.innerText = aktifSayfaMetni;
+
+    // 3. HİYERARŞİ (ZAMİRLER / DETAILS ZİNCİRİ)
+    // Radar noktasındaki gerçek elemanı bul ve hiyerarşiyi ondan türet
+    const hedef = document.elementFromPoint(window.innerWidth / 2, radarSiniri + 10);
+    if (hedef) {
+        let d = hedef.closest('details'), zincir = [];
+        while (d) {
+            const baslik = d.querySelector('summary')?.innerText;
+            if (baslik) zincir.unshift(baslik);
+            d = d.parentElement.closest('details');
+        }
+        // Kitap adını (en dış katman) sayfa nosunda olduğu için hiyerarşiden çıkar
+        if (zincir.length > 1) zincir.shift();
+        
+        zAlan.innerHTML = zincir.map(b => `<span class="zincir-parca">${b}</span>`).join('');
+    }
+}
+
+/* --- OLAY TETİKLEYİCİLERİ --- */
+
+// Kaydırma sırasında kasmayı önlemek için (Throttling)
+let kaydirmaZamanlayici;
+window.addEventListener('scroll', () => {
+    if (!kaydirmaZamanlayici) {
+        kaydirmaZamanlayici = setTimeout(() => {
+            barGuncelle();
+            kaydirmaZamanlayici = null;
+        }, 60); // 60ms hızında akıcı takip
+    }
+}, { passive: true });
+
+// İlk açılışta barı doldur
+window.addEventListener('load', barGuncelle);
+
+// Detaylara tıklandığında barı tazele
+document.addEventListener('click', () => setTimeout(barGuncelle, 200));
