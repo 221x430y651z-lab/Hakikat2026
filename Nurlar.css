@@ -52,6 +52,11 @@ details > details > details > details > details > summary { background: #f3f4f6 
     font-size: 1.5rem;
     background: #f9fafb !important;
 }
+.arabi3{
+    font-family: 'Amiri', serif !important;
+    font-size: 1.5rem;
+    color: 9ca3af;
+}
 
 /* 4. İÇERİK YAZILARI */
 details {
