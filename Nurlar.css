@@ -6,9 +6,12 @@
 }
 
 html, body {
-    width: 100% !important; /* Laptop ekranına boydan boya yayılsın */
-    background-color: #6b7280; 
+    width: 100%;
+    height: auto !important; /* Sabit yüksekliği kaldır */
+    overflow-y: visible !important; /* Kaydırmayı tarayıcıya devret */
+    min-height: 101vh; /* Ekrandan biraz uzun olsun ki çubuk tetiklensin */
 }
+
 
 /* 2. KİTAP KILIFLARI GENEL AYARLARI */
 details {
