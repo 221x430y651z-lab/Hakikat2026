@@ -1,4 +1,3 @@
-
 /* 1. TÜM BOŞLUKLARI VE TAŞMALARI KÖKTEN SIFIRLA */
 * {
     box-sizing: border-box;
@@ -7,7 +6,7 @@
 }
 
 html, body {
-    width: 100% !important;
+    width: 100% !important; /* Laptop ekranına boydan boya yayılsın */
     background-color: #6b7280; 
 }
 
@@ -33,7 +32,7 @@ summary {
     box-shadow: 0 1px 2px rgba(0,0,0,0.05); 
 }
 
-/* --- GRİ GEÇİŞLERİ --- */
+/* --- GRİ GEÇİŞLERİ (ORİJİNAL) --- */
 details > summary { background: #6b7280 !important; color: #ffffff !important; padding: 5px 4px !important; }
 details > details > summary { background: #9ca3af !important; color: #ffffff !important; padding: 4px 4px !important; }
 details > details > details > summary { background: #d1d5db !important; color: #111827 !important; padding: 4px 4px !important; }
@@ -84,7 +83,7 @@ details {
 
 summary::-webkit-details-marker { display: none !important; }
 
-/* 5. ÜST PANEL VE BEYAZ ŞERİT DÜZENİ */
+/* 5. ÜST PANEL VE BEYAZ ŞERİT (SADECE LAPTOP) */
 .ust-panel {
     display: flex !important;
     background-color: #1f2937 !important;
@@ -94,7 +93,7 @@ summary::-webkit-details-marker { display: none !important; }
     justify-content: space-between !important;
     position: fixed !important;
     top: 0 !important;
-    width: 100% !important;
+    width: 100% !important; /* Laptop ekranını tam kaplasın */
     z-index: 10000 !important;
     height: 60px !important;
 }
@@ -112,15 +111,15 @@ body { padding-top: 60px !important; }
     min-width: 45px !important;
 }
 
-/* OKUNAKLI BEYAZ ŞERİT - YENİ AYARLAR */
+/* OKUNAKLI BEYAZ ŞERİT */
 .panel-bilgi-seridi {
     flex: 1 !important;
     margin: 0 10px !important;
     background-color: #ffffff !important;
-    height: 44px !important; /* Yazılar sığsın diye yükseltildi */
+    height: 44px !important; 
     border-radius: 6px !important;
     position: relative !important;
-    overflow: hidden !important;
+    /* overflow: hidden !important; */ /* MOBİL YAVŞAKLIĞI: YAZILAR KESİLMESİN DİYE KAPATTIK */
     display: flex !important;
     align-items: center !important;
     border: 2px solid #374151 !important;
@@ -144,9 +143,9 @@ body { padding-top: 60px !important; }
     padding: 0 10px; 
 }
 
-/* Sayfa No: İri ve Belirgin */
+/* Sayfa No: Laptopta iri ve net */
 #bar-sayfa-metni {
-    font-size: 1.3rem !important; /* Kitap yazısı boyu */
+    font-size: 1.3rem !important; 
     font-weight: 900 !important;
     color: #b91c1c !important; 
     margin-right: 20px !important;
@@ -155,11 +154,11 @@ body { padding-top: 60px !important; }
     padding-right: 12px;
 }
 
-/* Zamir Zinciri: Net ve Büyük */
+/* Zamir Zinciri: Kesilmeden Boydan Boya */
 #baslik-zinciri {
     display: flex; 
     gap: 6px; 
-    overflow: hidden; 
+    /* overflow: hidden; */ /* TELEFONDA KAFASINA GÖRE SAKLIYORDU, İPTAL ETTİK */
     white-space: nowrap; 
     color: #000 !important;
     font-size: 1.2rem !important;
