@@ -1,19 +1,15 @@
-// Paneli Açıp Kapatan Fonksiyon
-function panelKontrol(durum) {
-    const panel = document.getElementById('orta-kontrol-paneli');
-    if (panel) {
-        panel.style.display = durum ? 'flex' : 'none';
-    }
-}
+ // Paneli göster/gizle
+        function toggleControlBox() {
+            const panel = document.getElementById('controlBox');
+            panel.style.display = (panel.style.display === 'block') ? 'none' : 'block';
+        }
 
-// Bütün Kitapları Açan Fonksiyon
-function hepsiniAc() {
-    const tumDetails = document.querySelectorAll('details');
-    tumDetails.forEach(d => d.open = true);
-}
-
-// Bütün Kitapları Kapatan Fonksiyon
-function hepsiniKapat() {
-    const tumDetails = document.querySelectorAll('details');
-    tumDetails.forEach(d => d.open = false);
-}
+        // Tüm details etiketlerini açan veya kapatan sihirli fonksiyon
+        function controlDetails(isOpen) {
+            // Sayfadaki tüm <details> etiketlerini bulur
+            const allDetails = document.querySelectorAll('details');
+            
+            allDetails.forEach(detail => {
+                detail.open = isOpen; // Hepsini açar (true) veya kapatır (false)
+            });
+        }

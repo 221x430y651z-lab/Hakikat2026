@@ -63,6 +63,21 @@ details {
     color: #111827 !important;
 }
 
+/* 2. KİTAP KILIFLARI GENEL AYARLARI */
+details {
+    display: block !important;
+    width: 100% !important;
+    background: transparent !important; 
+    border: none !important;
+    border-top: 1px solid transparent !important; 
+    border-bottom: 1px solid transparent !important; 
+}
+
+
+
+
+
+
 .elifler, .lahika, .sayfa {
     display: block !important;
     text-align: center !important;
