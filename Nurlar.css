@@ -1,13 +1,17 @@
 /* 1. TÜM BOŞLUKLARI VE TAŞMALARI KÖKTEN SIFIRLA */
 * {
     box-sizing: border-box;
-    margin: 0 !important;
-    padding: 0 !important;
+    /* margin: 0 !important;  --> Bu zorlama mobil tarayıcı yerleşimini bozabilir, genel sıfırlama yeterli */
+    /* padding: 0 !important; --> İçerikteki tüm paddingleri sıfırlamak tıklama alanlarını öldürür */
+    margin: 0;
+    padding: 0;
 }
 
 html, body {
-    width: 100% !important;
+    /* width: 100% !important; --> Adres çubuğu çakışmasının ana sebebi; tarayıcının genişlik hesaplamasını kilitliyor */
+    min-height: 100%; /* Sayfanın en az ekran kadar olmasını sağlar ama taşmaya izin verir */
     background-color: #6b7280; 
+    overflow-x: hidden; /* Yatay kaymayı engellemek için daha güvenli bir yol */
 }
 
 /* 2. KİTAP KILIFLARI GENEL AYARLARI */
@@ -33,11 +37,11 @@ summary {
 }
 
 /* --- GRİ GEÇİŞLERİ --- */
-details > summary { background: #6b7280 !important; color: #ffffff !important; padding: 5px 4px !important; }
-details > details > summary { background: #9ca3af !important; color: #ffffff !important; padding: 4px 4px !important; }
-details > details > details > summary { background: #d1d5db !important; color: #111827 !important; padding: 4px 4px !important; }
-details > details > details > details > summary { background: #e5e7eb !important; color: #111827 !important; padding: 4px 4px !important; }
-details > details > details > details > details > summary { background: #f3f4f6 !important; color: #111827 !important; padding: 4px 4px !important; }
+details > summary { background: #6b7280 !important; color: #ffffff !important; padding: 12px 4px !important; } /* Mobilde tıklama kolaylığı için padding artırıldı */
+details > details > summary { background: #9ca3af !important; color: #ffffff !important; padding: 10px 4px !important; }
+details > details > details > summary { background: #d1d5db !important; color: #111827 !important; padding: 8px 4px !important; }
+details > details > details > details > summary { background: #e5e7eb !important; color: #111827 !important; padding: 8px 4px !important; }
+details > details > details > details > details > summary { background: #f3f4f6 !important; color: #111827 !important; padding: 8px 4px !important; }
 
 /* 3. ARAPÇA METİN AYARLARI */
 .arabi {
@@ -96,9 +100,14 @@ summary::-webkit-details-marker { display: none !important; }
     width: 100% !important;
     z-index: 10000 !important;
     height: 60px !important;
+    /* Bazı cihazlarda çubuk üstüne binmesin diye: */
+    left: 0;
 }
 
-body { padding-top: 60px !important; }
+body { 
+    padding-top: 60px !important; 
+    /* position: relative; --> Tarayıcının üst çubuğu doğru algılaması için eklenebilir */
+}
 
 .panel-eleman {
     background-color: #4b5563 !important;
@@ -116,7 +125,7 @@ body { padding-top: 60px !important; }
     flex: 1 !important;
     margin: 0 10px !important;
     background-color: #ffffff !important;
-    height: 44px !important; /* Yazılar sığsın diye yükseltildi */
+    height: 44px !important; 
     border-radius: 6px !important;
     position: relative !important;
     overflow: hidden !important;
@@ -145,13 +154,13 @@ body { padding-top: 60px !important; }
 
 /* Sayfa No: İri ve Belirgin */
 #bar-sayfa-metni {
-    font-size: 1.3rem !important; /* Kitap yazısı boyu */
+    font-size: 1.1rem !important; /* Mobilde çok devasa olmaması için hafif küçültüldü */
     font-weight: 900 !important;
     color: #b91c1c !important; 
-    margin-right: 20px !important;
+    margin-right: 10px !important;
     white-space: nowrap;
     border-right: 2px solid #eee;
-    padding-right: 12px;
+    padding-right: 8px;
 }
 
 /* Zamir Zinciri: Net ve Büyük */
@@ -161,7 +170,7 @@ body { padding-top: 60px !important; }
     overflow: hidden; 
     white-space: nowrap; 
     color: #000 !important;
-    font-size: 1.2rem !important;
+    font-size: 1rem !important; /* Mobilde taşma yapmasın diye dengelendi */
     font-weight: 800 !important;
 }
 
@@ -170,4 +179,3 @@ body { padding-top: 60px !important; }
     color: #999; 
     margin-left: 6px; 
 }
-
