@@ -17,14 +17,6 @@
     src: url('fonts/arimo-v35-latin-regular.woff2') format('woff2');
 }
 
-@font-face {
-    font-family: 'Scheherazade New';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url('fonts/scheherazade-new-v20-latin-regular.woff2') format('woff2');
-}
-
 /* ============================================================
    1. GENEL AYARLAR
    ============================================================ */
