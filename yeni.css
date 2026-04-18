@@ -51,13 +51,18 @@ body {
   text-align: center;
   padding: 13px 5px;
   line-height: 2;
-  background: #f9fafb;
+  background: #dfe1e3;
 }
 
 .arabi3 {
+ display: block;
+  direction: rtl;
   font-family: 'Amiri', serif;
   font-size: 1.5rem;
-  color: #9ca3af;
+  text-align: center;
+  padding: 13px 5px;
+  line-height: 2;
+  background: #dfe1e3;
 }
 
 /* ============================================================
@@ -95,11 +100,13 @@ body {
    ============================================================ */
 details {
     display: block;
+    padding: 0 3px;
     width: 100%;
     font-family: 'Arimo', sans-serif;
     font-size: 1.3rem;
     text-align: center;
-    background: #f9fafb;
+  /*  background: #f9fafb;*/
+  background: #dfe1e3;
 }
 
 summary {
@@ -127,7 +134,7 @@ details > details > details > details > details > summary { background: #f3f4f6;
     padding: 8px 0;
     font-size: 0.85rem;
     color: #374151;
-    background: #f9fafb; 
+    background: #dfe1e3; 
 }
 
 /* ============================================================
