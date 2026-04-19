@@ -8,41 +8,59 @@ window.addEventListener('load', function() {
         "genclik.html", "muhakemat.html", "nurunilkkapisi.html"
     ];
 
+    const kitapGercekAdlari = [
+        "Sözler", "Mektubat 1", "Mektubat 2", "Lem'alar", "Şualar 1", "Şualar 2", 
+        "Sıracın Nur", "Zülfikar", "Asayı Musa", "Tılsımlar", "İşaratül İcaz", 
+        "Mesnevi Nuriye", "ST Gaybi", "Barla", "Kastamonu", "Emirdağ 1", 
+        "Emirdağ 2", "Emirdağ 3", "Emirdağ 4", "Hanımlar Rehberi", 
+        "Gençlik Rehberi", "Muhakemat", "Nurun İlk Kapısı"
+    ];
+
     const urlParams = new URLSearchParams(window.location.search);
     const aranan = urlParams.get('ara');
     const sonGit = urlParams.get('son');
     let suankiDosya = window.location.pathname.split("/").pop();
+    
+    let indexNumarasi = kitapListesi.indexOf(suankiDosya);
+    let kitapAdi = indexNumarasi !== -1 ? kitapGercekAdlari[indexNumarasi] : "Külliyat";
 
-    // KONTROL PANELİ (Sağ Üst Köşeye Çektik)
-    const kontrolKutusu = document.createElement('div');
-    kontrolKutusu.style = `position:fixed; top:15px; right:15px; z-index:999999; display:flex; gap:8px; align-items:center; flex-direction: row-reverse;`;
-
-    // KIRMIZI ÇARPI BUTONU (En sağda duracak şekilde ayarlandı)
-    let html = `<button id="kapatBtn" style="width:38px; height:38px; border-radius:50%; border:2px solid #d93025; background:rgba(255,255,255,0.95); color:#d93025; font-size:20px; font-weight:bold; cursor:pointer; box-shadow:0 3px 8px rgba(0,0,0,0.2); display:flex; align-items:center; justify-content:center;">✕</button>`;
-
-    // Eğer arama yapılmışsa, kırmızı çarpının soluna minik ileri-geri oklarını ekle
-    if (aranan) {
-        html += `
-            <div id="sayac" style="background:rgba(217,48,37,0.9); color:#fff; padding:5px 10px; border-radius:15px; font-size:12px; font-family:sans-serif; font-weight:bold; min-width:45px; text-align:center;">...</div>
-            <button id="ileriBtn" style="width:38px; height:38px; border-radius:50%; border:1px solid #ccc; background:#fff; cursor:pointer; font-size:14px;">▼</button>
-            <button id="geriBtn" style="width:38px; height:38px; border-radius:50%; border:1px solid #ccc; background:#fff; cursor:pointer; font-size:14px;">▲</button>
-        `;
+    // --- SADECE ÇARPI BUTONU (Arama yokken de görünsün diye dışarı aldık) ---
+    if (!aranan) {
+        const tekKapat = document.createElement('button');
+        tekKapat.innerHTML = "✕";
+        // Sağ üstten 40px içerde, kırmızı daire çarpı
+        tekKapat.style = `position:fixed; top:20px; right:40px; width:42px; height:42px; border-radius:50%; border:none; background:#d93025; color:#fff; font-weight:bold; font-size:20px; cursor:pointer; z-index:999999; box-shadow:0 4px 10px rgba(0,0,0,0.2); display:flex; align-items:center; justify-content:center;`;
+        document.body.appendChild(tekKapat);
+        tekKapat.onclick = () => { window.location.href = 'index.html'; };
     }
 
-    kontrolKutusu.innerHTML = html;
-    document.body.appendChild(kontrolKutusu);
-
-    // Kırmızı çarpıya basınca ana sayfaya uçurur
-    document.getElementById('kapatBtn').onclick = () => { window.location.href = 'index.html'; };
-
-    // Arama boyama ve navigasyon mantığı (24 saatlik emeğin kalbi)
     if (aranan) {
+        const panel = document.createElement('div');
+        panel.id = "aramaPaneli";
+        panel.style = `position:fixed; top:12px; left:50%; transform:translateX(-50%); background:#fff; border:1px solid #d1d1d1; border-radius:15px; padding:10px 20px; z-index:999999; font-family:sans-serif; box-shadow:0 8px 30px rgba(0,0,0,0.12); display:flex; align-items:center; gap:20px; min-width:350px; justify-content:space-between;`;
+        
+        panel.innerHTML = `
+            <div style="display:flex; flex-direction:column; min-width:130px;">
+                <span style="font-size:13px; font-weight:bold; color:#222;">${kitapAdi}</span>
+                <span id="sayac" style="font-weight:600; font-size:13px; color:#d93025; margin-top:2px;">${aranan} ...</span>
+            </div>
+            <div style="display:flex; gap:12px; align-items:center;">
+                <button id="geriBtn" style="width:45px; height:45px; border-radius:50%; border:1px solid #e0e0e0; background:white; font-size:18px; cursor:pointer;">▲</button>
+                <button id="ileriBtn" style="width:45px; height:45px; border-radius:50%; border:1px solid #e0e0e0; background:white; font-size:18px; cursor:pointer;">▼</button>
+                <button id="kapatBtn" style="width:32px; height:32px; border:none; background:none; color:#d93025; cursor:pointer; font-weight:bold; font-size:22px; display:flex; align-items:center; justify-content:center;">✕</button>
+            </div>`;
+        
+        document.body.appendChild(panel);
+        document.getElementById('kapatBtn').onclick = () => { window.location.href = 'index.html'; };
+
         const regex = new RegExp("(" + aranan.replace(/İ/g, "(İ|i)").replace(/i/g, "(İ|i)").replace(/I/g, "(I|ı)").replace(/ı/g, "(I|ı)") + ")", "gi");
+        
         function boya(node) {
+            if (node.id === "aramaPaneli" || (node.parentNode && node.parentNode.id === "aramaPaneli")) return;
             if (node.nodeType === 3) {
                 if (node.data.match(regex)) {
                     const span = document.createElement('span');
-                    span.innerHTML = node.data.replace(regex, '<mark class="isaretli" style="background:#ffe066;">$1</mark>');
+                    span.innerHTML = node.data.replace(regex, '<mark class="isaretli" style="background-color:#ffe066; color:#000; border-radius:2px; padding:0 2px;">$1</mark>');
                     node.parentNode.replaceChild(span, node);
                 }
             } else if (node.nodeType === 1 && node.childNodes && !/(script|style|mark)/i.test(node.tagName)) {
@@ -61,9 +79,9 @@ window.addEventListener('load', function() {
             while (ebeveyn) { ebeveyn.open = true; ebeveyn = ebeveyn.parentElement.closest('details'); }
             setTimeout(() => {
                 hedef.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                bulunanlar.forEach(el => el.style.background = "#ffe066");
-                hedef.style.background = "#ff9632";
-                document.getElementById('sayac').innerText = `${i + 1}/${bulunanlar.length}`;
+                bulunanlar.forEach(el => { el.style.backgroundColor = "#ffe066"; });
+                hedef.style.backgroundColor = "#ff9632";
+                document.getElementById('sayac').innerText = `${aranan} (${i + 1}/${bulunanlar.length})`;
             }, 60);
         };
 
