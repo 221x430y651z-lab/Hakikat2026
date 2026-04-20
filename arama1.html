@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <!-- TELEFONA SIĞDIRAN KRİTİK SATIR -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Külliyat Arama</title>
+    <script src="fihrist.js"></script> 
+    <style>
+        /* Ekran ayarları: Sağa sola taşmayı engeller */
+        * { box-sizing: border-box; }
+        body { font-family: sans-serif; background: #f4f4f4; text-align: center; padding: 10px; margin: 0; }
+        
+        /* Panel telefonda tam genişlikte olur */
+        .panel { background: #2c3e50; padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        
+        /* Arama kutusu artık ekrandan taşmaz */
+        input { width: 100%; padding: 15px; font-size: 20px; border-radius: 30px; border: none; outline: none; }
+        
+        .skor { font-size: 22px; color: #f1c40f; margin-top: 15px; font-weight: bold; }
+        
+        #sonuclar { margin-top: 20px; width: 100%; }
+        
+        /* Satırlar ekrana tam sığar, isim ve sayı yan yana görünür */
+        .satir { 
+            background: white; margin: 10px auto; padding: 15px; width: 100%; max-width: 600px;
+            border-radius: 15px; display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; font-size: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .satir:hover { background: #e8f4fd; }
+        .kitap-ad { font-weight: bold; color: #333; text-align: left; }
+        .sayi { color: #2980b9; font-weight: bold; margin-left: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="panel">
+    <input type="text" id="aramaKutusu" placeholder="Kelimeni yaz abi..." oninput="ara()">
+    <div id="toplam" class="skor">Toplam: 0</div>
+</div>
+
+<div id="sonuclar"></div>
+
+<script>
+const kitapListesi = [
+    "sozler.html", "mektubat1.html", "mektubat2.html", "lemalar.html",
+    "sualar1.html", "sualar2.html", "siracunnur.html", "zulfikar.html",
+    "asayimusa.html", "tilsimlar.html", "isaratulicaz.html", "mesnevinuriye.html",
+    "stgaybi.html", "barla.html", "kastamonu.html", "emirdag1.html",
+    "emirdag2.html", "emirdag3.html", "emirdag4.html", "hanimlar.html",
+    "genclik.html", "muhakemat.html", "nurunilkkapisi.html"
+];
+
+function ara() {
+    let aranan = document.getElementById('aramaKutusu').value.replace('İ', 'i').replace('I', 'ı').toLowerCase().trim();
+    let divSonuc = document.getElementById('sonuclar');
+    let divToplam = document.getElementById('toplam');
+    
+    divSonuc.innerHTML = "";
+    let kitapToplami = {}; 
+    let genelToplam = 0;
+
+    if (aranan.length < 2) {
+        divToplam.innerText = "Toplam: 0";
+        return;
+    }
+
+    for (let anahtar in fihrist) {
+        let kucukAnahtar = anahtar.replace('İ', 'i').replace('I', 'ı').toLowerCase();
+
+        if (kucukAnahtar.startsWith(aranan)) {
+            for (let kitap in fihrist[anahtar]) {
+                if (!kitapToplami[kitap]) kitapToplami[kitap] = 0;
+                kitapToplami[kitap] += fihrist[anahtar][kitap];
+                genelToplam += fihrist[anahtar][kitap];
+            }
+        }
+    }
+
+    kitapListesi.forEach(kitap => {
+        let adet = kitapToplami[kitap] || 0;
+        if (adet > 0) {
+            let ad = kitap.replace(".html", "").toUpperCase();
+            divSonuc.innerHTML += `
+                <div class="satir" onclick="window.location.href='${kitap}?ara=${encodeURIComponent(aranan)}'">
+                    <span class="kitap-ad">${ad}</span>
+                    <span class="sayi">${adet}</span>
+                </div>`;
+        }
+    });
+
+    divToplam.innerText = `Toplam Bulunan: ${genelToplam}`;
+}
+</script>
+<script src="kulliyat_sistem.js"></script>
+</body>
+</html>

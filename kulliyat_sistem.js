@@ -24,7 +24,6 @@ window.addEventListener('load', function() {
     let indexNumarasi = kitapListesi.indexOf(suankiDosya);
     let kitapAdi = indexNumarasi !== -1 ? kitapGercekAdlari[indexNumarasi] : "Külliyat";
 
-    // --- KAPAT BUTONU ---
     if (!aranan) {
         const tekKapat = document.createElement('button');
         tekKapat.innerHTML = "✕";
@@ -52,15 +51,18 @@ window.addEventListener('load', function() {
         document.body.appendChild(panel);
         document.getElementById('kapatBtn').onclick = () => { window.location.href = 'index.html'; };
 
-        // TÜRKÇE KARAKTER DUYARLI ARAMA
-        const regex = new RegExp("(" + aranan.replace(/İ/g, "(İ|i)").replace(/i/g, "(İ|i)").replace(/I/g, "(I|ı)").replace(/ı/g, "(I|ı)") + ")", "gi");
+        // --- KESİN VE DOĞRU ARAMA MANTIĞI ---
+        // Türkçe harfleri ve tüm varyasyonları hesaba katar, sadece kelime BAŞINI kabul eder.
+        const d_aranan = aranan.replace(/İ/g, "(İ|i)").replace(/i/g, "(İ|i)").replace(/I/g, "(I|ı)").replace(/ı/g, "(I|ı)");
+        const regex = new RegExp("(^|[^a-zA-ZçÇğĞıİöÖşŞüÜ])(" + d_aranan + ")", "gi");
         
         function boya(node) {
             if (node.id === "aramaPaneli" || (node.parentNode && node.parentNode.id === "aramaPaneli")) return;
             if (node.nodeType === 3) {
                 if (node.data.match(regex)) {
                     const span = document.createElement('span');
-                    span.innerHTML = node.data.replace(regex, '<mark class="isaretli" style="background-color:#ffe066; color:#000; border-radius:2px; padding:0 2px;">$1</mark>');
+                    // $1 önündeki karakter (boşluk vs), $2 aranan kelime
+                    span.innerHTML = node.data.replace(regex, '$1<mark class="isaretli" style="background-color:#ffe066; color:#000; border-radius:2px; padding:0 2px;">$2</mark>');
                     node.parentNode.replaceChild(span, node);
                 }
             } else if (node.nodeType === 1 && node.childNodes && !/(script|style|mark)/i.test(node.tagName)) {

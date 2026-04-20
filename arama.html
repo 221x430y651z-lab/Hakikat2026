@@ -2,26 +2,16 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <!-- TELEFONA SIĞDIRAN KRİTİK SATIR -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Külliyat Arama</title>
     <script src="fihrist.js"></script> 
     <style>
-        /* Ekran ayarları: Sağa sola taşmayı engeller */
         * { box-sizing: border-box; }
         body { font-family: sans-serif; background: #f4f4f4; text-align: center; padding: 10px; margin: 0; }
-        
-        /* Panel telefonda tam genişlikte olur */
         .panel { background: #2c3e50; padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-        
-        /* Arama kutusu artık ekrandan taşmaz */
         input { width: 100%; padding: 15px; font-size: 20px; border-radius: 30px; border: none; outline: none; }
-        
         .skor { font-size: 22px; color: #f1c40f; margin-top: 15px; font-weight: bold; }
-        
         #sonuclar { margin-top: 20px; width: 100%; }
-        
-        /* Satırlar ekrana tam sığar, isim ve sayı yan yana görünür */
         .satir { 
             background: white; margin: 10px auto; padding: 15px; width: 100%; max-width: 600px;
             border-radius: 15px; display: flex; justify-content: space-between; align-items: center;
@@ -52,7 +42,8 @@ const kitapListesi = [
 ];
 
 function ara() {
-    let aranan = document.getElementById('aramaKutusu').value.replace('İ', 'i').replace('I', 'ı').toLowerCase().trim();
+    // Arama kelimesini Türkçe kurallarına (Ç, Ş, İ, Ü vs.) göre küçültür
+    let aranan = document.getElementById('aramaKutusu').value.toLocaleLowerCase('tr-TR').trim();
     let divSonuc = document.getElementById('sonuclar');
     let divToplam = document.getElementById('toplam');
     
@@ -60,14 +51,17 @@ function ara() {
     let kitapToplami = {}; 
     let genelToplam = 0;
 
+    // En az 2 harf yazılınca aramaya başla
     if (aranan.length < 2) {
         divToplam.innerText = "Toplam: 0";
         return;
     }
 
     for (let anahtar in fihrist) {
-        let kucukAnahtar = anahtar.replace('İ', 'i').replace('I', 'ı').toLowerCase();
+        // Fihristteki kelimeyi de Türkçe kurallarına göre küçültür
+        let kucukAnahtar = anahtar.toLocaleLowerCase('tr-TR');
 
+        // "çare..." ile başlayan her şeyi (çaresiz, çaremiz vb.) yakalar
         if (kucukAnahtar.startsWith(aranan)) {
             for (let kitap in fihrist[anahtar]) {
                 if (!kitapToplami[kitap]) kitapToplami[kitap] = 0;
@@ -77,6 +71,7 @@ function ara() {
         }
     }
 
+    // Sonuçları listele
     kitapListesi.forEach(kitap => {
         let adet = kitapToplami[kitap] || 0;
         if (adet > 0) {
