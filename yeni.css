@@ -137,7 +137,12 @@ details > details > details > details > details > summary { background: #f3f4f6;
     color: #374151;
     background: #dfe1e3; 
 }
-
+.hasiye{
+  color: red;
+}
+.hasiyerenk{
+  color: rgb(10, 18, 243);
+}
 /* ============================================================
    6. MOBİL UYUMLULUK
    ============================================================ */
