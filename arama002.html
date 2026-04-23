@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Külliyat Arama</title>
+    <script src="fihrist.js"></script> 
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; text-align: center; padding: 15px; margin: 0; }
+        
+        .panel { 
+            background: #2c3e50; 
+            padding: 25px; 
+            border-radius: 25px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3); 
+            color: white;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        input[type="text"] { 
+            width: 100%; 
+            padding: 18px; 
+            font-size: 22px; 
+            border-radius: 35px; 
+            border: none; 
+            outline: none; 
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Kitap Seçim Alanı - Rahatlatılmış Versiyon */
+        .filtre-konteynir { 
+            background: rgba(255, 255, 255, 0.1); 
+            padding: 20px; 
+            border-radius: 15px; 
+            text-align: left;
+        }
+        
+        .sec-all { 
+            margin-bottom: 15px; 
+            border-bottom: 1px solid rgba(255,255,255,0.2); 
+            padding-bottom: 10px; 
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .kitap-secim { 
+            display: grid; 
+            /* Mobilde 2, bilgisayarda 3-4 sütun yapar */
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
+            gap: 12px; 
+        }
+
+        .kitap-secim label { 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            background: rgba(255,255,255,0.08);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .kitap-secim label:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: #f1c40f;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #f1c40f; /* Checkbox rengi */
+        }
+
+        .skor { font-size: 24px; color: #f1c40f; margin-top: 20px; font-weight: bold; }
+        
+        /* Sonuç Listesi */
+        #sonuclar { margin-top: 25px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .satir { 
+            background: white; 
+            margin: 8px 0; 
+            padding: 18px 25px; 
+            width: 100%; 
+            max-width: 600px;
+            border-radius: 18px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            cursor: pointer; 
+            font-size: 19px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .satir:hover { transform: translateY(-2px); background: #e8f4fd; }
+        .kitap-ad { font-weight: bold; color: #2c3e50; }
+        .sayi { background: #2980b9; color: white; padding: 5px 12px; border-radius: 20px; font-size: 16px; }
+    </style>
+</head>
+<body>
+
+<div class="panel">
+    <input type="text" id="aramaKutusu" placeholder="Aramak istediğin kelime..." oninput="ara()">
+    
+    <div class="filtre-konteynir">
+        <div class="sec-all">
+            <label><input type="checkbox" id="hepsiniSec" checked onclick="tumunuToggle(this)"> TÜMÜNÜ SEÇ / KALDIR</label>
+        </div>
+        <div id="kitapSecimListesi" class="kitap-secim"></div>
+    </div>
+
+    <div id="toplam" class="skor">Toplam: 0</div>
+</div>
+
+<div id="sonuclar"></div>
+
+<script>
+const kitapListesi = [
+    "sozler.html", "mektubat1.html", "mektubat2.html", "lemalar.html",
+    "sualar1.html", "sualar2.html", "siracunnur.html", "zulfikar.html",
+    "asayimusa.html", "tilsimlar.html", "isaratulicaz.html", "mesnevinuriye.html",
+    "stgaybi.html", "barla.html", "kastamonu.html", "emirdag1.html",
+    "emirdag2.html", "emirdag3.html", "emirdag4.html", "hanimlar.html",
+    "genclik.html", "muhakemat.html", "nurunilkkapisi.html"
+];
+
+// Kitap isimlerini güzelleştiren yardımcı fonksiyon
+function isimFormatla(dosyaAdi) {
+    let ad = dosyaAdi.replace(".html", "").toUpperCase();
+    return ad.replace(/(\d+)/g, ' $1'); // Sayıların önüne boşluk ekler
+}
+
+function listeyiHazirla() {
+    const konteynir = document.getElementById('kitapSecimListesi');
+    konteynir.innerHTML = "";
+    kitapListesi.forEach(kitap => {
+        konteynir.innerHTML += `
+            <label>
+                <input type="checkbox" class="kitap-cb" value="${kitap}" checked onchange="filtreKontrol()"> 
+                ${isimFormatla(kitap)}
+            </label>`;
+    });
+}
+
+function tumunuToggle(anaKaynak) {
+    const checkboxlar = document.querySelectorAll('.kitap-cb');
+    checkboxlar.forEach(cb => cb.checked = anaKaynak.checked);
+    ara();
+}
+
+function filtreKontrol() {
+    // Eğer elle hepsi seçilirse veya bir tane kaldırılırsa "Tümünü Seç" kutusunu güncelle
+    const hepsi = document.querySelectorAll('.kitap-cb');
+    const secili = document.querySelectorAll('.kitap-cb:checked');
+    document.getElementById('hepsiniSec').checked = (hepsi.length === secili.length);
+    ara();
+}
+
+function ara() {
+    let aranan = document.getElementById('aramaKutusu').value.toLocaleLowerCase('tr-TR').trim();
+    let divSonuc = document.getElementById('sonuclar');
+    let divToplam = document.getElementById('toplam');
+    
+    const seciliKitaplar = Array.from(document.querySelectorAll('.kitap-cb:checked')).map(cb => cb.value);
+
+    divSonuc.innerHTML = "";
+    let kitapToplami = {}; 
+    let genelToplam = 0;
+
+    if (aranan.length < 2) {
+        divToplam.innerText = "Toplam: 0";
+        return;
+    }
+
+    for (let anahtar in fihrist) {
+        let kucukAnahtar = anahtar.toLocaleLowerCase('tr-TR');
+
+        if (kucukAnahtar.startsWith(aranan)) {
+            for (let kitap in fihrist[anahtar]) {
+                if (seciliKitaplar.includes(kitap)) {
+                    kitapToplami[kitap] = (kitapToplami[kitap] || 0) + fihrist[anahtar][kitap];
+                    genelToplam += fihrist[anahtar][kitap];
+                }
+            }
+        }
+    }
+
+    // Sonuçları göster
+    kitapListesi.forEach(kitap => {
+        let adet = kitapToplami[kitap] || 0;
+        if (adet > 0) {
+            divSonuc.innerHTML += `
+                <div class="satir" onclick="window.location.href='${kitap}?ara=${encodeURIComponent(aranan)}'">
+                    <span class="kitap-ad">${isimFormatla(kitap)}</span>
+                    <span class="sayi">${adet} adet</span>
+                </div>`;
+        }
+    });
+
+    divToplam.innerText = `Toplam Bulunan: ${genelToplam}`;
+}
+
+// Başlat
+listeyiHazirla();
+</script>
+<script src="kulliyat_sistem.js"></script>
+</body>
+</html>

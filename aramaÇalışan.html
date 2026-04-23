@@ -6,64 +6,17 @@
     <title>Külliyat Arama</title>
     <script src="fihrist.js"></script> 
     <style>
-        /* Genel ayarlar */
         * { box-sizing: border-box; }
-        body { 
-            font-family: sans-serif; 
-            background: #f4f4f4; 
-            text-align: center; 
-            padding: 10px; 
-            margin: 0; 
-        }
-
-        /* Bilgisayarda "kaba" durmaması için ana kapsayıcı ekledik */
-        .container {
-            max-width: 800px; /* Genişliği sınırladık (Kibarlaştırdık) */
-            margin: 0 auto;   /* Ortaya hizaladık */
-        }
-
-        .panel { 
-            background: #2c3e50; 
-            padding: 20px; 
-            border-radius: 20px; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
-        }
-
-        input { 
-            width: 100%; 
-            padding: 15px; 
-            font-size: 20px; 
-            border-radius: 30px; 
-            border: none; 
-            outline: none; 
-        }
-
-        .skor { 
-            font-size: 22px; 
-            color: #f1c40f; 
-            margin-top: 15px; 
-            font-weight: bold; 
-        }
-
-        #sonuclar { 
-            margin-top: 20px; 
-            width: 100%; 
-        }
-
+        body { font-family: sans-serif; background: #f4f4f4; text-align: center; padding: 10px; margin: 0; }
+        .panel { background: #2c3e50; padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        input { width: 100%; padding: 15px; font-size: 20px; border-radius: 30px; border: none; outline: none; }
+        .skor { font-size: 22px; color: #f1c40f; margin-top: 15px; font-weight: bold; }
+        #sonuclar { margin-top: 20px; width: 100%; }
         .satir { 
-            background: white; 
-            margin: 10px auto; 
-            padding: 15px; 
-            width: 100%; 
-            border-radius: 15px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            cursor: pointer; 
-            font-size: 18px; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background: white; margin: 10px auto; padding: 15px; width: 100%; max-width: 600px;
+            border-radius: 15px; display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; font-size: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-
         .satir:hover { background: #e8f4fd; }
         .kitap-ad { font-weight: bold; color: #333; text-align: left; }
         .sayi { color: #2980b9; font-weight: bold; margin-left: 10px; }
@@ -71,15 +24,12 @@
 </head>
 <body>
 
-<!-- İçeriği kibarlaştıran ana kutu -->
-<div class="container">
-    <div class="panel">
-        <input type="text" id="aramaKutusu" placeholder="Aramak istediğiniz kelimeyi yazınız..." oninput="ara()">
-        <div id="toplam" class="skor">Toplam: 0</div>
-    </div>
-
-    <div id="sonuclar"></div>
+<div class="panel">
+    <input type="text" id="aramaKutusu" placeholder="Kelimeni yaz abi..." oninput="ara()">
+    <div id="toplam" class="skor">Toplam: 0</div>
 </div>
+
+<div id="sonuclar"></div>
 
 <script>
 const kitapListesi = [
@@ -92,6 +42,7 @@ const kitapListesi = [
 ];
 
 function ara() {
+    // Arama kelimesini Türkçe kurallarına (Ç, Ş, İ, Ü vs.) göre küçültür
     let aranan = document.getElementById('aramaKutusu').value.toLocaleLowerCase('tr-TR').trim();
     let divSonuc = document.getElementById('sonuclar');
     let divToplam = document.getElementById('toplam');
@@ -100,13 +51,17 @@ function ara() {
     let kitapToplami = {}; 
     let genelToplam = 0;
 
+    // En az 2 harf yazılınca aramaya başla
     if (aranan.length < 2) {
         divToplam.innerText = "Toplam: 0";
         return;
     }
 
     for (let anahtar in fihrist) {
+        // Fihristteki kelimeyi de Türkçe kurallarına göre küçültür
         let kucukAnahtar = anahtar.toLocaleLowerCase('tr-TR');
+
+        // "çare..." ile başlayan her şeyi (çaresiz, çaremiz vb.) yakalar
         if (kucukAnahtar.startsWith(aranan)) {
             for (let kitap in fihrist[anahtar]) {
                 if (!kitapToplami[kitap]) kitapToplami[kitap] = 0;
@@ -116,6 +71,7 @@ function ara() {
         }
     }
 
+    // Sonuçları listele
     kitapListesi.forEach(kitap => {
         let adet = kitapToplami[kitap] || 0;
         if (adet > 0) {
