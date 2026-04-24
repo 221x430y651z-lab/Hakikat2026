@@ -3,83 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Külliyat Arama</title>
+    <title>Külliyat Detaylı Arama</title>
     <script src="fihrist.js"></script> 
     <style>
-        /* Genel ayarlar */
         * { box-sizing: border-box; }
-        body { 
-            font-family: sans-serif; 
-            background: #f4f4f4; 
-            text-align: center; 
-            padding: 10px; 
-            margin: 0; 
-        }
-
-        /* Bilgisayarda "kaba" durmaması için ana kapsayıcı ekledik */
-        .container {
-            max-width: 800px; /* Genişliği sınırladık (Kibarlaştırdık) */
-            margin: 0 auto;   /* Ortaya hizaladık */
-        }
-
+        body { font-family: sans-serif; background: #f4f4f4; text-align: center; padding: 10px; margin: 0; }
+        
+        /* BURAYI DÜZENLEDİM: Laptopta çok geniş olmasın diye max-width ve ortalama eklendi */
         .panel { 
             background: #2c3e50; 
             padding: 20px; 
             border-radius: 20px; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            max-width: 600px; /* Laptopta genişliği sınırlar */
+            margin: 0 auto;   /* Ortada durmasını sağlar */
         }
-
-        input { 
-            width: 100%; 
-            padding: 15px; 
-            font-size: 20px; 
-            border-radius: 30px; 
-            border: none; 
-            outline: none; 
-        }
-
-        .skor { 
-            font-size: 22px; 
-            color: #f1c40f; 
-            margin-top: 15px; 
-            font-weight: bold; 
-        }
-
-        #sonuclar { 
-            margin-top: 20px; 
-            width: 100%; 
-        }
-
+        
+        input { width: 100%; padding: 15px; font-size: 20px; border-radius: 30px; border: none; outline: none; }
+        .skor { font-size: 18px; color: #f1c40f; margin-top: 15px; font-weight: bold; line-height: 1.4; }
+        #sonuclar { margin-top: 20px; width: 100%; }
         .satir { 
-            background: white; 
-            margin: 10px auto; 
-            padding: 15px; 
-            width: 100%; 
-            border-radius: 15px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            cursor: pointer; 
-            font-size: 18px; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background: white; margin: 10px auto; padding: 15px; width: 100%; max-width: 600px;
+            border-radius: 15px; display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; font-size: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-
         .satir:hover { background: #e8f4fd; }
         .kitap-ad { font-weight: bold; color: #333; text-align: left; }
-        .sayi { color: #2980b9; font-weight: bold; margin-left: 10px; }
+        .detay-yazi { font-size: 13px; color: #7f8c8d; text-align: left; margin-top: 4px; }
+        .sayi { color: #2980b9; font-weight: bold; margin-left: 10px; min-width: 40px; text-align: right; }
     </style>
 </head>
 <body>
 
-<!-- İçeriği kibarlaştıran ana kutu -->
-<div class="container">
-    <div class="panel">
-        <input type="text" id="aramaKutusu" placeholder="Aramak istediğiniz kelimeyi yazınız..." oninput="ara()">
-        <div id="toplam" class="skor">Toplam: 0</div>
-    </div>
-
-    <div id="sonuclar"></div>
+<div class="panel">
+    <input type="text" id="aramaKutusu" placeholder="Kelimeleri boşlukla yaz abi..." oninput="ara()">
+    <div id="toplam" class="skor">Toplam: 0</div>
 </div>
+
+<div id="sonuclar"></div>
 
 <script>
 const kitapListesi = [
@@ -92,43 +53,67 @@ const kitapListesi = [
 ];
 
 function ara() {
-    let aranan = document.getElementById('aramaKutusu').value.toLocaleLowerCase('tr-TR').trim();
+    let arananTam = document.getElementById('aramaKutusu').value.toLocaleLowerCase('tr-TR').trim();
+    let kelimeler = arananTam.split(/\s+/).filter(k => k.length >= 2);
     let divSonuc = document.getElementById('sonuclar');
     let divToplam = document.getElementById('toplam');
     
     divSonuc.innerHTML = "";
-    let kitapToplami = {}; 
-    let genelToplam = 0;
+    let kitapDetaylari = {}; 
+    let genelKelimeToplamlari = {};
 
-    if (aranan.length < 2) {
+    if (kelimeler.length === 0) {
         divToplam.innerText = "Toplam: 0";
         return;
     }
 
+    kelimeler.forEach(k => genelKelimeToplamlari[k] = 0);
+
     for (let anahtar in fihrist) {
         let kucukAnahtar = anahtar.toLocaleLowerCase('tr-TR');
-        if (kucukAnahtar.startsWith(aranan)) {
-            for (let kitap in fihrist[anahtar]) {
-                if (!kitapToplami[kitap]) kitapToplami[kitap] = 0;
-                kitapToplami[kitap] += fihrist[anahtar][kitap];
-                genelToplam += fihrist[anahtar][kitap];
+
+        kelimeler.forEach(kelime => {
+            if (kucukAnahtar.startsWith(kelime)) {
+                for (let kitap in fihrist[anahtar]) {
+                    if (!kitapDetaylari[kitap]) kitapDetaylari[kitap] = {};
+                    if (!kitapDetaylari[kitap][kelime]) kitapDetaylari[kitap][kelime] = 0;
+                    
+                    let adet = fihrist[anahtar][kitap];
+                    kitapDetaylari[kitap][kelime] += adet;
+                    genelKelimeToplamlari[kelime] += adet;
+                }
             }
-        }
+        });
     }
 
     kitapListesi.forEach(kitap => {
-        let adet = kitapToplami[kitap] || 0;
-        if (adet > 0) {
+        if (kitapDetaylari[kitap]) {
             let ad = kitap.replace(".html", "").toUpperCase();
+            let detayYazisi = "";
+            let kitapToplami = 0;
+
+            for (let kelime in kitapDetaylari[kitap]) {
+                let sayi = kitapDetaylari[kitap][kelime];
+                detayYazisi += `${kelime}: ${sayi} | `;
+                kitapToplami += sayi;
+            }
+
             divSonuc.innerHTML += `
-                <div class="satir" onclick="window.location.href='${kitap}?ara=${encodeURIComponent(aranan)}'">
-                    <span class="kitap-ad">${ad}</span>
-                    <span class="sayi">${adet}</span>
+                <div class="satir" onclick="window.location.href='${kitap}?ara=${encodeURIComponent(arananTam)}'">
+                    <div>
+                        <div class="kitap-ad">${ad}</div>
+                        <div class="detay-yazi">${detayYazisi.slice(0, -3)}</div>
+                    </div>
+                    <span class="sayi">${kitapToplami}</span>
                 </div>`;
         }
     });
 
-    divToplam.innerText = `Toplam Bulunan: ${genelToplam}`;
+    let genelYazi = "";
+    for (let kelime in genelKelimeToplamlari) {
+        genelYazi += `${kelime} (${genelKelimeToplamlari[kelime]})  `;
+    }
+    divToplam.innerText = genelYazi || "Toplam: 0";
 }
 </script>
 <script src="kulliyat_sistem.js"></script>
