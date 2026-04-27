@@ -19,7 +19,7 @@
 <div class="ust-panel">
     <input type="text" id="aramaInput" placeholder="Kelimeleri yazın (Örn: hakiki iman)">
     <br>
-    <button onclick="darRadar()">100 HARF MESAFELİ TARA</button>
+    <button onclick="darRadar()">400 HARF MESAFELİ TARA</button>
     <div id="bilgi">Mesafe: 100 Harf (Sıkı Takip)</div>
 </div>
 
@@ -35,7 +35,7 @@ async function darRadar() {
     döküm.innerHTML = "";
     if (parcalar.length < 2) { bilgi.innerText = "En az 2 kelime yazın!"; return; }
 
-    const MAX_MESAFE = 100; 
+    const MAX_MESAFE = 400; 
     const kitaplar = ["sozler.html", "mektubat1.html", "mektubat2.html", "lemalar.html", "sualar1.html", "sualar2.html", "siracunnur.html", "zulfikar.html", "asayimusa.html", "tilsimlar.html", "isaratulicaz.html", "mesnevinuriye.html", "stgaybi.html", "barla.html", "kastamonu.html", "emirdag1.html", "emirdag2.html", "emirdag3.html", "emirdag4.html", "hanimlar.html", "genclik.html", "muhakemat.html", "nurunilkkapisi.html"];
 
     bilgi.innerText = "100 harf hassasiyetiyle taranıyor...";
