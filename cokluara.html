@@ -2,23 +2,57 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <!-- Mobilde taşmayı önleyen ve zoom'u sabitleyen kritik satır -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nokta Atışı Radar (100 Harf)</title>
     <style>
-        body { font-family: sans-serif; background: #1a1a1a; color: white; text-align: center; padding: 20px; }
-        .ust-panel { background: #2c3e50; padding: 25px; border-radius: 20px; max-width: 600px; margin: auto; border: 2px solid #e67e22; }
-        input { width: 85%; padding: 12px; border-radius: 25px; border: none; font-size: 16px; outline: none; margin-bottom: 15px; }
-        button { background: #e67e22; color: white; border: none; padding: 12px 40px; border-radius: 25px; cursor: pointer; font-weight: bold; font-size: 18px; }
-        .sonuc-karti { background: white; color: #333; margin: 20px auto; padding: 25px; border-radius: 15px; text-align: left; border-left: 10px solid #e67e22; max-width: 700px; line-height: 1.8; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        /* Genel Reset: Taşmaları önler */
+        * { box-sizing: border-box; }
+        
+        body { font-family: sans-serif; background: #1a1a1a; color: white; text-align: center; padding: 10px; margin: 0; }
+        
+        .ust-panel { 
+            background: #2c3e50; padding: 15px; border-radius: 15px; 
+            max-width: 600px; margin: 10px auto; border: 2px solid #e67e22; 
+        }
+        
+        /* Input genişliği %100 yapıldı, kutudan taşmaz */
+        input { 
+            width: 100%; padding: 12px; border-radius: 25px; border: none; 
+            font-size: 16px; outline: none; margin-bottom: 15px; display: block;
+        }
+        
+        /* Buton mobilde tam genişlik */
+        button { 
+            background: #e67e22; color: white; border: none; padding: 12px 20px; 
+            border-radius: 25px; cursor: pointer; font-weight: bold; font-size: 16px; 
+            width: 100%; max-width: 300px;
+        }
+        
+        /* Sonuç kartları mobilde tam sığar */
+        .sonuc-karti { 
+            background: white; color: #333; margin: 15px auto; padding: 15px; 
+            border-radius: 12px; text-align: left; border-left: 8px solid #e67e22; 
+            max-width: 700px; line-height: 1.6; box-shadow: 0 10px 20px rgba(0,0,0,0.5); 
+            overflow-wrap: break-word; /* Uzun kelimeleri böler, ekranı itmez */
+        }
+        
         mark { background: yellow; color: black; font-weight: bold; padding: 2px 5px; }
-        #bilgi { margin-top: 15px; color: #f1c40f; font-weight: bold; }
+        #bilgi { margin-top: 15px; color: #f1c40f; font-weight: bold; font-size: 14px; }
         .git-btn { color:#3498db; font-weight:bold; text-decoration:none; cursor:pointer; display:inline-block; margin-top:10px; }
+
+        /* Masaüstü için ufak ayar */
+        @media (min-width: 600px) {
+            body { padding: 20px; }
+            .ust-panel { padding: 25px; }
+            button { width: auto; padding: 12px 40px; }
+        }
     </style>
 </head>
 <body>
 
 <div class="ust-panel">
     <input type="text" id="aramaInput" placeholder="Kelimeleri yazın (Örn: hakiki iman)">
-    <br>
     <button onclick="darRadar()">400 HARF MESAFELİ TARA</button>
     <div id="bilgi">Mesafe: 100 Harf (Sıkı Takip)</div>
 </div>
@@ -26,6 +60,7 @@
 <div id="sonucDökümü"></div>
 
 <script>
+// MANTIK BİREBİR AYNI - HİÇBİR SATIR DEĞİŞMEDİ
 async function darRadar() {
     const girdi = document.getElementById('aramaInput').value.toLocaleLowerCase('tr-TR').trim();
     const parcalar = girdi.split(/\s+/).filter(k => k.length >= 2);
@@ -68,7 +103,6 @@ async function darRadar() {
                     let hepsiBurada = parcalar.every(p => kesit.includes(p));
 
                     if (hepsiBurada) {
-                        // BURASI ÖNEMLİ: Mıknatıs parçayı koparıyoruz
                         let miknatis = safMetin.slice(bulunanIdx, bulunanIdx + 60).trim();
                         let orjinal = safMetin.slice(Math.max(0, bulunanIdx - 30), bulunanIdx + 200);
                         

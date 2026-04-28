@@ -7,78 +7,138 @@
     <script src="fihrist.js"></script> 
     <style>
         * { box-sizing: border-box; }
-        body { font-family: sans-serif; background: #f4f4f4; text-align: center; padding: 10px; margin: 0; }
+        body { font-family: sans-serif; background: #f4f4f4; text-align: center; padding: 10px; margin: 0; overflow-x: hidden; }
+        
+        /* Panel genişliği mobile tam uyumlu yapıldı */
         .panel { 
             background: #2c3e50; 
-            padding: 20px; 
+            padding: 15px; 
             border-radius: 20px; 
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             max-width: 600px; 
+            width: 100%; /* Telefondaki genişlik */
             margin: 0 auto;   
         }
 
-        /* İstediğin o birleşik kutu ve buton yapısı */
+        /* Arama kutusu ve butonun yan yana düzgün durması sağlandı */
         .arama-kapsayici {
             display: flex;
             background: white;
             border-radius: 30px;
             padding: 5px;
             align-items: center;
+            width: 100%;
         }
+        
         input { 
             flex: 1; 
-            padding: 10px 20px; 
-            font-size: 18px; 
+            padding: 12px 15px; 
+            font-size: 16px; /* Mobilde zoom yapmaması için ideal boyut */
             border: none; 
             outline: none; 
             border-radius: 30px;
+            width: 50%; /* Taşmayı önler */
         }
+
         .ara-btn-kucuk {
             background: #f1c40f;
             color: #2c3e50;
             border: none;
-            padding: 8px 20px;
+            padding: 10px 15px;
             border-radius: 25px;
             font-weight: bold;
             cursor: pointer;
             margin-right: 5px;
+            white-space: nowrap; /* Yazının butondan taşmasını engeller */
         }
 
-        .skor { font-size: 18px; color: #f1c40f; margin-top: 15px; font-weight: bold; line-height: 1.4; }
-        #sonuclar { margin-top: 20px; width: 100%; }
-        .satir { 
-            background: white; margin: 10px auto; padding: 15px; width: 100%; max-width: 600px;
-            border-radius: 15px; display: flex; justify-content: space-between; align-items: center;
-            cursor: pointer; font-size: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        .skor { 
+            font-size: 16px; 
+            color: #f1c40f; 
+            margin-top: 15px; 
+            font-weight: bold; 
+            line-height: 1.4;
+            word-wrap: break-word; /* Uzun kelimeler ekranı bozmasın */
         }
+
+        #sonuclar { 
+            margin-top: 20px; 
+            width: 100%; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Liste elemanları mobilde tam genişlikte */
+        .satir { 
+            background: white; 
+            margin: 8px 0; 
+            padding: 12px; 
+            width: 100%; 
+            max-width: 600px;
+            border-radius: 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            cursor: pointer; 
+            font-size: 16px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
         .satir:hover { background: #e8f4fd; }
-        .kitap-ad { font-weight: bold; color: #333; text-align: left; }
-        .detay-yazi { font-size: 13px; color: #7f8c8d; text-align: left; margin-top: 4px; }
-        .sayi { color: #2980b9; font-weight: bold; margin-left: 10px; min-width: 40px; text-align: right; }
+        
+        .kitap-ad { font-weight: bold; color: #333; text-align: left; flex: 1; }
+        
+        .detay-yazi { 
+            font-size: 12px; 
+            color: #7f8c8d; 
+            text-align: left; 
+            margin-top: 4px; 
+            word-break: break-all; /* Detayların taşmasını engeller */
+        }
+
+        .sayi { 
+            color: #2980b9; 
+            font-weight: bold; 
+            margin-left: 10px; 
+            min-width: 35px; 
+            text-align: right; 
+            font-size: 16px;
+        }
+
+        /* Küçük ekranlar için ek ayarlar */
+        @media screen and (max-width: 480px) {
+            .panel { padding: 10px; }
+            input { font-size: 14px; padding: 10px; }
+            .ara-btn-kucuk { padding: 8px 12px; font-size: 13px; }
+            .skor { font-size: 14px; }
+            .satir { font-size: 15px; padding: 10px; }
+        }
     </style>
 </head>
 <body>
 
 <div class="panel">
     <div class="arama-kapsayici">
-        <!-- oninput silindi, sadece Enter veya Buton ile çalışır -->
-        <input type="text" id="aramaKutusu" placeholder="Aramak istediğiniz kelimeleri yazın ARA tuşuna basın..." onkeydown="if(event.key==='Enter') ara()">
+        <input type="text" id="aramaKutusu" placeholder="Arama yapın..." onkeydown="if(event.key==='Enter') ara()">
         <button class="ara-btn-kucuk" onclick="ara()">ARA</button>
     </div>
     <div id="toplam" class="skor">Toplam: 0</div>
 </div>
 
-<div style="margin-top: 15px; text-align: center;">
+<div style="margin-top: 15px; text-align: center; padding: 0 10px;">
     <button onclick="window.location.href='cokluara.html'" style="
         background: #f1c40f; 
         color: #2c3e50; 
         border: none; 
-        padding: 10px 20px; 
+        padding: 12px 20px; 
         border-radius: 20px; 
         font-weight: bold; 
         cursor: pointer;
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         font-size: 14px;
+        width: 100%;
+        max-width: 600px;
     ">
        Çoklu Kelime Arama Kutusuna Git 🚀
     </button>
@@ -87,6 +147,7 @@
 <div id="sonuclar"></div>
 
 <script>
+// Arama motoru algoritmana dokunulmadı
 const kitapListesi = ["sozler.html", "mektubat1.html", "mektubat2.html", "lemalar.html", "sualar1.html", "sualar2.html", "siracunnur.html", "zulfikar.html", "asayimusa.html", "tilsimlar.html", "isaratulicaz.html", "mesnevinuriye.html", "stgaybi.html", "barla.html", "kastamonu.html", "emirdag1.html", "emirdag2.html", "emirdag3.html", "emirdag4.html", "hanimlar.html", "genclik.html", "muhakemat.html", "nurunilkkapisi.html"];
 const kitapGercekAdlari = ["Sözler", "Mektubat 1", "Mektubat 2", "Lem'alar", "Şualar 1", "Şualar 2", "Sıracın Nur", "Zülfikar", "Asayı Musa", "Tılsımlar", "İşaratül İcaz", "Mesnevi Nuriye", "ST Gaybi", "Barla", "Kastamonu", "Emirdağ 1", "Emirdağ 2", "Emirdağ 3", "Emirdağ 4", "Hanımlar Rehberi", "Gençlik Rehberi", "Muhakemat", "Nurun İlk Kapısı"];
 
