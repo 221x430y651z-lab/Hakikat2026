@@ -1,5 +1,4 @@
 (function() {
-    // Katip Cevat'ın Defteri
     let katipDefteri = {
         zaman: "",
         sehir: "Tespit ediliyor...",
@@ -7,48 +6,54 @@
         kitap: "---"
     };
 
-    // 1. Konum Bilgisini Al
+    // 1. Konum Bilgisini Al (Hata payına karşı kontrol eklendi)
     fetch('https://ipapi.co')
         .then(res => res.json())
         .then(data => { 
             katipDefteri.sehir = (data.city || "Bilinmiyor") + " / " + (data.country_name || ""); 
             raporaYaz("SİTEYE GİRİŞ"); 
+        }).catch(() => {
+            katipDefteri.sehir = "Konum Alınamadı";
+            raporaYaz("SİTEYE GİRİŞ (Konumsuz)");
         });
 
-    // 2. Excel'e (Forma) Gönderen Fonksiyon
+    // 2. Google Tabloya Gönderen Garanti Fonksiyon
     function raporaYaz(islem) {
         katipDefteri.zaman = new Date().toLocaleString('tr-TR');
-        
         const raporMetni = `${katipDefteri.zaman} | ${katipDefteri.sehir} | Ara: ${katipDefteri.aranan} | Kitap: ${katipDefteri.kitap} | [${islem}]`;
 
-        // Nokta atışı güncellenmiş URL ve ID
         const formURL = "https://google.com";
         const entryID = "entry.1361057805"; 
 
-        const veri = new URLSearchParams();
-        veri.append(entryID, raporMetni);
+        // En sağlam veri gönderme formatı budur
+        const params = new URLSearchParams();
+        params.append(entryID, raporMetni);
 
         fetch(formURL, {
             method: "POST",
             mode: "no-cors",
-            body: veri
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: params.toString()
         }).then(() => {
-            console.log("Rapor gönderildi: " + islem);
+            console.log("✔ Tabloya gönderildi: " + islem);
+        }).catch(err => {
+            console.error("❌ Hata oluştu:", err);
         });
     }
 
-    // 3. Kitap Tıklamalarını Yakala
+    // 3. Kitap Tıklama ve Arama Yakalayıcılar
     document.addEventListener('click', function(e) {
-        let el = e.target.closest('.kitap-kart'); // Kitap kutularının sınıfı bu değilse burayı düzeltiriz
-        if (el) {
-            katipDefteri.kitap = el.innerText.trim();
+        let el = e.target.closest('.kitap-kart') || e.target.closest('a'); 
+        if (el && el.innerText.trim().length > 0) {
+            katipDefteri.kitap = el.innerText.trim().substring(0, 50);
             raporaYaz("KİTABA GİRDİ");
         }
     });
 
-    // 4. Arama Yapılırsa Yakala
     document.addEventListener('change', function(e) {
-        if (e.target.tagName === 'INPUT' || e.target.type === 'text') {
+        if (e.target.tagName === 'INPUT') {
             katipDefteri.aranan = e.target.value;
             raporaYaz("ARAMA YAPTI");
         }
