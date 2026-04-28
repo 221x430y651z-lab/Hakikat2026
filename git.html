@@ -5,12 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kitap Açılıyor...</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #1a1a1a; }
-        iframe { width: 100%; height: 100vh; border: none; background: white; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #1a1a1a; width: 100vw; position: relative; }
+        iframe { width: 100%; height: 100vh; border: none; background: white; display: block; }
+        
+        /* SENİN ÖLÇÜLERİNE GÖRE AYARLANAN YENİ BUTON */
+        .ust-kapat-btn {
+            position: fixed;
+            top: 145px;      /* SENİN ÖLÇÜN: 145px */
+            right: 45px;     /* SENİN ÖLÇÜN: 30px */
+            width: 45px;     /* SENİN ÖLÇÜN: 45px */
+            height: 45px;    /* SENİN ÖLÇÜN: 45px */
+            transform: translateY(50%); /* SENİN ÖLÇÜN */
+            
+            z-index: 999999;
+            background: #d93025; /* SENİN RENGİN */
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
+
+    <!-- Bu buton artık seninkinin tam üstüne oturacak -->
+    <button class="ust-kapat-btn" onclick="window.location.href='index.html'">✕</button>
+
     <iframe id="pencere"></iframe>
+
     <script>
     window.onload = function() {
         const params = new URLSearchParams(window.location.search);
@@ -23,35 +52,36 @@
             iframe.src = kitap;
             iframe.onload = function() {
                 const doc = iframe.contentDocument || iframe.contentWindow.document;
-                
-                // Mobilde yazılar okunsun, her yer açılsın
+
                 const stil = doc.createElement('style');
                 stil.innerHTML = `
-                    body { font-size: 20px !important; }
-                    div, p, section, details { display: block !important; visibility: visible !important; opacity: 1 !important; }
+                    body { font-size: 20px !important; line-height: 1.6 !important; word-wrap: break-word !important; padding: 10px !important; }
+                    div, section, article, p, span, details { display: block !important; height: auto !important; max-height: none !important; visibility: visible !important; opacity: 1 !important; overflow: visible !important; }
                     mark { background: yellow !important; color: black !important; font-weight: bold; }
                 `;
                 doc.head.appendChild(stil);
 
-                // NOKTA ATIŞI: Sayfada sadece o 30 harflik hedefi bul
-                const metin = doc.body.innerHTML;
-                const yer = metin.indexOf(miknatis);
+                const bodyMetni = doc.body.innerHTML;
+                const nerede = bodyMetni.indexOf(miknatis);
                 
-                if (yer !== -1) {
-                    // Hedef bölgeyi işaretle, gerisine dokunma
-                    let parca = metin.substring(yer, yer + 400); 
+                if (nerede !== -1) {
+                    let oncesi = bodyMetni.substring(0, nerede);
+                    let parca = bodyMetni.substring(nerede, nerede + 400); 
+                    let sonrasi = bodyMetni.substring(nerede + 400);
+
                     kelimeler.forEach(k => {
-                        parca = parca.replace(new RegExp(`(${k})`, "gi"), "<mark id='HEDEF'>$1</mark>");
+                        const reg = new RegExp(`(${k})`, "gi");
+                        parca = parca.replace(reg, "<mark id='HEDEF_OK'>$1</mark>");
                     });
 
-                    // Sadece o bölgeyi güncelle, böylece aşağıdaki kelimeler boyanmaz
-                    doc.body.innerHTML = metin.substring(0, yer) + parca + metin.substring(yer + 400);
+                    doc.body.innerHTML = oncesi + parca + sonrasi;
 
-                    // Şak diye oraya odakla
                     setTimeout(() => {
-                        const el = doc.getElementById('HEDEF');
-                        if(el) el.scrollIntoView({ behavior: 'auto', block: 'center' });
-                    }, 400);
+                        const hedef = doc.getElementById('HEDEF_OK');
+                        if (hedef) {
+                            hedef.scrollIntoView({ behavior: 'auto', block: 'center' });
+                        }
+                    }, 500);
                 }
             };
         }
