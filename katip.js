@@ -7,7 +7,7 @@
         kitap: "---"
     };
 
-    // 1. Konum Bilgisini Al (İzmir mi, başka yer mi?)
+    // 1. Konum Bilgisini Al
     fetch('https://ipapi.co')
         .then(res => res.json())
         .then(data => { 
@@ -15,30 +15,31 @@
             raporaYaz("SİTEYE GİRİŞ"); 
         });
 
-    // 2. Excel'e Gönderen Ana Fonksiyon
+    // 2. Excel'e (Forma) Gönderen Fonksiyon
     function raporaYaz(islem) {
-        katipDefteri.zaman = new Date().toLocaleTimeString('tr-TR');
+        katipDefteri.zaman = new Date().toLocaleString('tr-TR');
         
-        // Senin Excel Satırın: Saat | Şehir | Aranan | Kitap | İşlem
         const raporMetni = `${katipDefteri.zaman} | ${katipDefteri.sehir} | Ara: ${katipDefteri.aranan} | Kitap: ${katipDefteri.kitap} | [${islem}]`;
 
-        // Senin Google Form Adresin (Nokta atışı güncelledim)
+        // Nokta atışı güncellenmiş URL ve ID
         const formURL = "https://google.com";
-        const entryID = "entry.1361057805"; // Senin Excel'deki sütun kimliği
+        const entryID = "entry.1361057805"; 
 
-        const veri = new FormData();
+        const veri = new URLSearchParams();
         veri.append(entryID, raporMetni);
 
         fetch(formURL, {
             method: "POST",
             mode: "no-cors",
             body: veri
+        }).then(() => {
+            console.log("Rapor gönderildi: " + islem);
         });
     }
 
     // 3. Kitap Tıklamalarını Yakala
     document.addEventListener('click', function(e) {
-        let el = e.target.closest('.kitap-kart');
+        let el = e.target.closest('.kitap-kart'); // Kitap kutularının sınıfı bu değilse burayı düzeltiriz
         if (el) {
             katipDefteri.kitap = el.innerText.trim();
             raporaYaz("KİTABA GİRDİ");
