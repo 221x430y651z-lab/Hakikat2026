@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- BU 3 SATIR CHROME'UN BOYUT KONTROLÜ YAPMASINI SAĞLAR -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <title>Risale-i Nur Kütüphanesi</title>
     <!-- Kendi yazı tiplerini içeren tek dosya -->
     <link rel="stylesheet" href="yeni.css">
@@ -36,18 +41,21 @@
          <a href="nurunilkkapisi.html" class="kitap-kart">23. Nurun İlk Kapısı</a>
     </div>
 
+    <!-- Ziyaretçi Sayacı -->
+    <div style="text-align: center; margin-top: 15px;">
+        <div style="display:inline-block; background:#2c3e50; padding:5px 10px; border-radius:6px;">
+            <img src="https://visitor-badge.laobi.icu/badge?page_id=kitaplarrisaleinur.github.io">
+        </div>
+    </div>
 
-    <div style="display:inline-block; background:#2c3e50; padding:5px 10px; border-radius:6px;">
-  <img src="https://visitor-badge.laobi.icu/badge?page_id=kitaplarrisaleinur.github.io">
-</div>
-<!-- Kapatma Butonu Başlangıcı -->
+<!-- Kapatma Butonu -->
 <div id="cikis-butonu" onclick="cikisYap()" style="
     position: fixed; 
     top: 20px; 
     right: 20px; 
     width: 40px; 
     height: 40px; 
-    background-color: rgba(0,0,0,0.7); 
+    background-color: rgba(217, 48, 37, 0.9); /* Senin o kırmızı tonuna yaklaştırdım */
     color: white; 
     border-radius: 50%; 
     display: flex; 
@@ -58,22 +66,18 @@
     cursor: pointer; 
     z-index: 9999;
     border: 2px solid white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 ">
     ✕
 </div>
 
 <script>
 function cikisYap() {
-    // Tarayıcı izin verirse sekmeyi kapatır
     window.close();
-    
-    // Eğer sekme kapanmazsa (güvenlik nedeniyle), Google'a veya boş sayfaya yönlendirir
     setTimeout(function() {
         window.location.href = "about:blank";
     }, 100);
 }
 </script>
-<!-- Kapatma Butonu Bitişi -->
-
 </body>
 </html>
