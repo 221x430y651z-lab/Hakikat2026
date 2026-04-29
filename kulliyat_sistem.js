@@ -133,3 +133,99 @@ function ikizButonlariEkle() {
 document.addEventListener("DOMContentLoaded", function() {
     ikizButonlariEkle();
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// --- HAFIZALI VE MERKEZİ AYAR SİSTEMİ ---
+let fontOran = parseFloat(localStorage.getItem('kulliyat_font')) || 1.0;
+let geceModuAcik = localStorage.getItem('kulliyat_tema') === 'karanlik';
+
+function ayarMerkeziEkle() {
+    if(document.getElementById('ayar-grubu')) return;
+
+    // Ana Konteynır (EKRANIN TAM ORTASINA ALINDI)
+    const grup = document.createElement('div');
+    grup.id = 'ayar-grubu';
+    grup.style.cssText = "position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:1000000; display:flex; flex-direction:column-reverse; gap:10px; align-items:center;";
+
+    const altMenu = document.createElement('div');
+    altMenu.id = 'ayar-alt-menu';
+    altMenu.style.cssText = "display:none; flex-direction:column; gap:8px; margin-bottom:10px;";
+
+    // GECE MODU BUTONU (Hafızalı Hilal/Güneş)
+    const btnGece = olusturButon(geceModuAcik ? '☀️' : '🌙', geceModuAcik ? '#f1c40f' : '#34495e', () => {
+        geceModuAcik = !geceModuAcik;
+        localStorage.setItem('kulliyat_tema', geceModuAcik ? 'karanlik' : 'aydinlik');
+        temaUygula(geceModuAcik);
+        btnGece.innerHTML = geceModuAcik ? '☀️' : '🌙';
+        btnGece.style.background = geceModuAcik ? '#f1c40f' : '#34495e';
+    });
+
+    const btnArtir = olusturButon('A+', '#27ae60', () => boyutlandir(1.1));
+    const btnAzalt = olusturButon('A-', '#2980b9', () => boyutlandir(0.9));
+    const btnSifirla = olusturButon('↺', '#7f8c8d', () => boyutlandir(0));
+
+    const anaButon = olusturButon('⚙️', '#546e7a', () => {
+        const acikMi = altMenu.style.display === 'flex';
+        altMenu.style.display = acikMi ? 'none' : 'flex';
+        anaButon.style.transform = acikMi ? 'rotate(0deg)' : 'rotate(90deg)';
+    });
+    anaButon.style.transition = "transform 0.3s ease";
+    anaButon.style.width = "50px"; anaButon.style.height = "50px";
+
+    altMenu.appendChild(btnGece);
+    altMenu.appendChild(btnSifirla);
+    altMenu.appendChild(btnAzalt);
+    altMenu.appendChild(btnArtir);
+    grup.appendChild(anaButon);
+    grup.appendChild(altMenu);
+    document.body.appendChild(grup);
+
+    // İlk açılışta hafızadaki ayarları uygula
+    temaUygula(geceModuAcik);
+    boyutlandir(1); 
+}
+
+function temaUygula(karanlikMi) {
+    document.body.style.background = karanlikMi ? '#1a1a1a' : '#f9fafb';
+    document.body.style.color = karanlikMi ? '#e0e0e0' : '#111827';
+    document.querySelectorAll('details, summary, .arabi, .arabi3').forEach(el => {
+        el.style.background = karanlikMi ? '#2d2d2d' : '#dfe1e3';
+        el.style.color = karanlikMi ? '#e0e0e0' : '#111827';
+    });
+}
+
+function boyutlandir(carpan) {
+    if (carpan === 0) fontOran = 1.0;
+    else fontOran *= carpan;
+    if (fontOran < 0.8) fontOran = 0.8;
+    if (fontOran > 1.8) fontOran = 1.8;
+
+    localStorage.setItem('kulliyat_font', fontOran);
+
+    document.querySelectorAll('details, summary, .arabi, .arabi3').forEach(el => {
+        if (!el.dataset.origSize) el.dataset.origSize = window.getComputedStyle(el).fontSize;
+        el.style.fontSize = (parseFloat(el.dataset.origSize) * fontOran) + "px";
+    });
+}
+
+function olusturButon(metin, renk, olay) {
+    const b = document.createElement('button');
+    b.innerHTML = metin;
+    b.style.cssText = `width:45px; height:45px; border-radius:50%; border:none; background:${renk}; color:white; font-weight:bold; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.3); font-size:16px; display:flex; align-items:center; justify-content:center;`;
+    b.onclick = olay;
+    return b;
+}
+
+document.addEventListener("DOMContentLoaded", ayarMerkeziEkle);
