@@ -178,19 +178,19 @@ function ayarMerkeziEkle() {
         // 1. Hafızayı temizle
         localStorage.removeItem('kulliyat_font');
         localStorage.removeItem('kulliyat_tema');
+        
+        // 2. Değişkenleri varsayılana çek
         fontOran = 1.0;
         geceModuAcik = false;
 
-        // 2. Elementlerin üzerine JS ile yazılmış tüm stilleri temizle (CSS'e bırak)
-        document.body.style.background = "";
-        document.body.style.color = "";
+        // 3. Renkleri ve Fontları Temizle (CSS'e bırak)
+        temaUygula(false); 
+        
         document.querySelectorAll('details, summary, .arabi, .arabi3').forEach(el => {
-            el.style.background = "";
-            el.style.color = "";
-            el.style.fontSize = "";
+            el.style.fontSize = ""; // Inline stili sil, CSS devreye girsin
         });
 
-        // 3. Gece modu butonunu görsel olarak ilk haline çek
+        // 4. Gece modu butonunu fabrika ayarına döndür
         btnGece.innerHTML = '🌙';
         btnGece.style.background = '#34495e';
     });
@@ -211,14 +211,14 @@ function ayarMerkeziEkle() {
     grup.appendChild(altMenu);
     document.body.appendChild(grup);
 
-    // Açılışta sadece ayar varsa uygula
+    // Açılışta hafızadaki ayarları uygula
     if(geceModuAcik) temaUygula(true);
     if(fontOran !== 1.0) boyutlandir(1); 
 }
 
 function temaUygula(karanlikMi) {
     if (!karanlikMi) {
-        // Eğer karanlık değilse stilleri boşalt ki orijinal CSS devreye girsin
+        // Stilleri temizle ki orijinal CSS dosyandaki renkler gelsin
         document.body.style.background = "";
         document.body.style.color = "";
         document.querySelectorAll('details, summary, .arabi, .arabi3').forEach(el => {
@@ -227,6 +227,7 @@ function temaUygula(karanlikMi) {
         });
         return;
     }
+    // Karanlık mod renkleri
     document.body.style.background = '#1a1a1a';
     document.body.style.color = '#e0e0e0';
     document.querySelectorAll('details, summary, .arabi, .arabi3').forEach(el => {
@@ -236,16 +237,19 @@ function temaUygula(karanlikMi) {
 }
 
 function boyutlandir(carpan) {
-    if (carpan === 0) fontOran = 1.0;
-    else fontOran *= carpan;
+    fontOran *= carpan;
     
-    if (fontOran < 0.8) fontOran = 0.8;
-    if (fontOran > 1.8) fontOran = 1.8;
+    // Sınırlar
+    if (fontOran < 0.7) fontOran = 0.7;
+    if (fontOran > 2.0) fontOran = 2.0;
 
     localStorage.setItem('kulliyat_font', fontOran);
 
     document.querySelectorAll('details, summary, .arabi, .arabi3').forEach(el => {
-        if (!el.dataset.origSize) el.dataset.origSize = window.getComputedStyle(el).fontSize;
+        // Orijinal boyutu bir kereye mahsus kaydet
+        if (!el.dataset.origSize) {
+            el.dataset.origSize = window.getComputedStyle(el).fontSize;
+        }
         el.style.fontSize = (parseFloat(el.dataset.origSize) * fontOran) + "px";
     });
 }
@@ -259,6 +263,7 @@ function olusturButon(metin, renk, olay) {
 }
 
 document.addEventListener("DOMContentLoaded", ayarMerkeziEkle);
+
 
 
 
