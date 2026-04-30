@@ -154,7 +154,6 @@ let geceModuAcik = localStorage.getItem('kulliyat_tema') === 'karanlik';
 function ayarMerkeziEkle() {
     if(document.getElementById('ayar-grubu')) return;
 
-    // Ana Konteynır (EKRANIN TAM ORTASINA ALINDI)
     const grup = document.createElement('div');
     grup.id = 'ayar-grubu';
     grup.style.cssText = "position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:1000000; display:flex; flex-direction:column-reverse; gap:10px; align-items:center;";
@@ -163,7 +162,6 @@ function ayarMerkeziEkle() {
     altMenu.id = 'ayar-alt-menu';
     altMenu.style.cssText = "display:none; flex-direction:column; gap:8px; margin-bottom:10px;";
 
-    // GECE MODU BUTONU (Hafızalı Hilal/Güneş)
     const btnGece = olusturButon(geceModuAcik ? '☀️' : '🌙', geceModuAcik ? '#f1c40f' : '#34495e', () => {
         geceModuAcik = !geceModuAcik;
         localStorage.setItem('kulliyat_tema', geceModuAcik ? 'karanlik' : 'aydinlik');
@@ -174,7 +172,28 @@ function ayarMerkeziEkle() {
 
     const btnArtir = olusturButon('A+', '#27ae60', () => boyutlandir(1.1));
     const btnAzalt = olusturButon('A-', '#2980b9', () => boyutlandir(0.9));
-    const btnSifirla = olusturButon('↺', '#7f8c8d', () => boyutlandir(0));
+    
+    // --- TAM SIFIRLAMA (CSS HALİNE DÖNÜŞ) ---
+    const btnSifirla = olusturButon('↺', '#7f8c8d', () => {
+        // 1. Hafızayı temizle
+        localStorage.removeItem('kulliyat_font');
+        localStorage.removeItem('kulliyat_tema');
+        fontOran = 1.0;
+        geceModuAcik = false;
+
+        // 2. Elementlerin üzerine JS ile yazılmış tüm stilleri temizle (CSS'e bırak)
+        document.body.style.background = "";
+        document.body.style.color = "";
+        document.querySelectorAll('details, summary, .arabi, .arabi3').forEach(el => {
+            el.style.background = "";
+            el.style.color = "";
+            el.style.fontSize = "";
+        });
+
+        // 3. Gece modu butonunu görsel olarak ilk haline çek
+        btnGece.innerHTML = '🌙';
+        btnGece.style.background = '#34495e';
+    });
 
     const anaButon = olusturButon('⚙️', '#546e7a', () => {
         const acikMi = altMenu.style.display === 'flex';
@@ -192,23 +211,34 @@ function ayarMerkeziEkle() {
     grup.appendChild(altMenu);
     document.body.appendChild(grup);
 
-    // İlk açılışta hafızadaki ayarları uygula
-    temaUygula(geceModuAcik);
-    boyutlandir(1); 
+    // Açılışta sadece ayar varsa uygula
+    if(geceModuAcik) temaUygula(true);
+    if(fontOran !== 1.0) boyutlandir(1); 
 }
 
 function temaUygula(karanlikMi) {
-    document.body.style.background = karanlikMi ? '#1a1a1a' : '#f9fafb';
-    document.body.style.color = karanlikMi ? '#e0e0e0' : '#111827';
+    if (!karanlikMi) {
+        // Eğer karanlık değilse stilleri boşalt ki orijinal CSS devreye girsin
+        document.body.style.background = "";
+        document.body.style.color = "";
+        document.querySelectorAll('details, summary, .arabi, .arabi3').forEach(el => {
+            el.style.background = "";
+            el.style.color = "";
+        });
+        return;
+    }
+    document.body.style.background = '#1a1a1a';
+    document.body.style.color = '#e0e0e0';
     document.querySelectorAll('details, summary, .arabi, .arabi3').forEach(el => {
-        el.style.background = karanlikMi ? '#2d2d2d' : '#dfe1e3';
-        el.style.color = karanlikMi ? '#e0e0e0' : '#111827';
+        el.style.background = '#2d2d2d';
+        el.style.color = '#e0e0e0';
     });
 }
 
 function boyutlandir(carpan) {
     if (carpan === 0) fontOran = 1.0;
     else fontOran *= carpan;
+    
     if (fontOran < 0.8) fontOran = 0.8;
     if (fontOran > 1.8) fontOran = 1.8;
 
@@ -229,7 +259,6 @@ function olusturButon(metin, renk, olay) {
 }
 
 document.addEventListener("DOMContentLoaded", ayarMerkeziEkle);
-
 
 
 
